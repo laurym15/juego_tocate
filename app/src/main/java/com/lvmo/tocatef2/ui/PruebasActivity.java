@@ -1,0 +1,507 @@
+package com.lvmo.tocatef2.ui;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
+import android.provider.MediaStore;
+import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.lvmo.tocatef2.model.User;
+import com.lvmo.tocatef2.R;
+import com.lvmo.tocatef2.ui.Raking.RankingActivity;
+import com.lvmo.tocatef2.ui.Transision.TransisionActivity;
+import com.squareup.picasso.Picasso;
+
+import java.util.Random;
+
+public class PruebasActivity extends AppCompatActivity {
+    private FirebaseAuth fireBaseAuth;
+    private User userjUno;
+    private FirebaseFirestore db;
+    private StorageReference mStorageRef;
+    private Uri image_uri;
+    private TextView etInicio, etCuentaReg, tvAciertos2, tvOrden;
+    private ImageView fotoPerfil, IvjDos;
+
+    private int anchoPant, altoPant,  puntosUid = 0;
+    private String  uid,nombreJuno = "";
+    private Random aleatorio;
+
+    final static long INTERVAL = 1000;
+    final static long TIMEOUT = 63000;
+    static long millisecondsleft;
+    boolean isPause = true, isParche = false;
+    CountDownTimer countDownTimer, countDownTimerDial;
+    CountDownTimer countDownTimeronResume;
+    private int n;
+
+    private ConstraintLayout layoutCargando;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_pruebas);
+        layoutCargando=findViewById(R.id.layoutCargando);
+        etInicio = findViewById(R.id.NomJuno);
+        tvAciertos2 = findViewById(R.id.TvAciertos);
+        etCuentaReg = findViewById(R.id.TvCuentaReg);
+        tvOrden = findViewById(R.id.tvTocate);
+        fotoPerfil = findViewById(R.id.imageJuno);
+        IvjDos = findViewById(R.id.imageJdos);
+        fotoPerfil.setImageResource(R.drawable.tocate);
+        IvjDos.setImageResource(R.drawable.tocame);
+
+        fireBaseAuth =fireBaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        mStorageRef = FirebaseStorage.getInstance().getReference();
+        uid=fireBaseAuth.getCurrentUser().getUid();
+
+        getnombrePuntos(uid);
+        descargarFoto(uid);    //IvjDos.setImageDrawable(fotoPerfil.getDrawable());  usar como funcion general
+
+        etInicio.setText(R.string.StvCargando1);
+        fotoPerfil.setVisibility(View.INVISIBLE);
+        IvjDos.setVisibility(View.INVISIBLE);
+        tvOrden.setVisibility(View.INVISIBLE);
+        layoutCargando.setVisibility(View.VISIBLE);
+        isPause = false;
+        isParche = true;
+        //temporizador para ve bistec
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                initPantalla();
+                eventoClic();
+                layoutCargando.setVisibility(View.GONE);
+
+            }
+        }, 5000);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (!isPause) {
+            countDownTimer = new CountDownTimer(TIMEOUT, INTERVAL) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    millisecondsleft = millisUntilFinished;
+                    etCuentaReg.setText(":" + String.format("%02d", millisUntilFinished / 1000));
+                }
+
+                @Override
+                public void onFinish() {
+                    if (isParche) funcionGameover();
+                }
+            }.start();
+
+        } else {
+            countDownTimeronResume = new CountDownTimer(millisecondsleft, INTERVAL) {
+                @SuppressLint({"DefaultLocale", "SetTextI18n"})
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    millisecondsleft = millisUntilFinished;
+                    etCuentaReg.setText(":" + String.format("%02d", millisUntilFinished / 1000));
+                }
+
+                @Override
+                public void onFinish() {
+                    if (isParche) {
+                        funcionGameover();
+                    }
+                }
+            }.start();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+            isPause = true;
+        }
+        if (countDownTimeronResume != null) {
+            countDownTimeronResume.cancel();
+        }
+    }
+
+    private void funcionGameover() {
+        MediaPlayer mp = MediaPlayer.create(this, R.raw.risamujer);
+        mp.start();
+        isPause = true;    // guardar puntos en base de datos
+        userjUno.setPoints(userjUno.getPoints() + puntosUid);
+        userjUno.setGameDone(userjUno.getGameDone() + 1);
+        db.collection("users")
+                .document(uid)
+                .set(userjUno).addOnSuccessListener(PruebasActivity.this, new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+
+            }
+        })
+                .addOnFailureListener(PruebasActivity.this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+
+        etCuentaReg.setText(R.string.SetCuentaReg);
+        dialogo_Gameover();
+    }
+
+    private void initPantalla() {
+        tvOrden.setVisibility(View.VISIBLE);
+        fotoPerfil.setVisibility(View.VISIBLE);
+        IvjDos.setVisibility(View.VISIBLE);
+        aleatorio = new Random();
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        anchoPant = metrics.widthPixels; // ancho absoluto en pixels
+        altoPant = metrics.heightPixels; // alto absoluto en pixels
+        puntosUid = 0;
+        actualizarAciertos();
+    }
+
+    private void moverImangen(ImageView imagen0, ImageView imagen1) {
+        int ranX, ranY, rangoXmin, rangoYmin, rangoXmax, rangoYmax;
+
+        int[] location = new int[2];
+        imagen0.getLocationOnScreen(location);
+
+        rangoXmin = location[0] - imagen1.getWidth();
+        rangoXmax = location[0] + imagen0.getWidth();
+        int stop;
+        do {
+            ranX = funcionAleatorio(0, anchoPant - imagen0.getWidth());
+            if (ranX < rangoXmin) stop = 1;
+            else {
+                if (ranX >= rangoXmax) stop = 1;
+                else stop = 0;
+            }
+        } while (stop == 0);
+        imagen1.setX(ranX);
+
+        rangoYmin = location[1] - imagen1.getHeight();
+        rangoYmax = location[1] + imagen0.getHeight();
+
+        do {
+            ranY = funcionAleatorio(0, altoPant - imagen0.getHeight() - 200);
+            if (ranY < rangoYmin) stop = 1;
+            else {
+                if (ranY >= rangoYmax) stop = 1;
+                else stop = 0;
+            }
+        } while (stop == 0);
+        imagen1.setY(ranY);
+
+        switch (new Random().nextInt(2)) {
+            case 0:
+               tvOrden.setX(location[0]);
+                int aa=location[1] +(imagen0.getHeight()/2);
+                tvOrden.setY(aa);
+
+                break;
+            case 1:
+                tvOrden.setX(ranX);
+                int bb=ranY +(imagen0.getHeight()*(4/3));
+                tvOrden.setY(bb);
+                break;
+        }
+
+    }
+
+    private int funcionAleatorio(int min, int maximo) {
+        return (aleatorio.nextInt(((maximo - min) + 1) + min));
+    }
+
+    private void eventoClic() {
+        fotoPerfil.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (n) {
+                    case 0:
+                        puntosUid++;
+                        break;
+                    case 1:
+                        if (puntosUid >= 0) puntosUid--;
+
+                        break;
+                }
+                actualizarAciertos();
+            }
+        });
+        IvjDos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (n) {
+                    case 0:
+                        if (puntosUid >= 1) puntosUid=puntosUid-2;
+                        break;
+                    case 1:
+                        puntosUid++;
+                        break;
+                }
+                actualizarAciertos();
+            }
+        });
+    }
+
+    private void actualizarAciertos() {
+        n = new Random().nextInt(2);
+        EtTocate(n);
+        moverImangen(IvjDos, fotoPerfil);
+        moverImangen(fotoPerfil, IvjDos);
+        tvAciertos2.setText(String.format(getString(R.string.Aciertos), puntosUid));
+    }
+
+    private void EtTocate(int varTocate) {
+        switch (varTocate) {
+            case 0:
+                tvOrden.setText(getString(R.string.SetTocate));
+                etInicio.setText(String.format(getString(R.string.SetInicio1),nombreJuno,getString(R.string.SetTocate)));
+                break;
+            case 1:
+                tvOrden.setText(getString(R.string.SetTocame1));
+                etInicio.setText(String.format(getString(R.string.SetInicio1),nombreJuno,getString(R.string.SetTocame1)));
+                break;
+        }
+    }
+
+    private void dialogo_Gameover() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(PruebasActivity.this);
+        LayoutInflater inflater = getLayoutInflater();
+
+        View view = inflater.inflate(R.layout.dialogo_gameover, null);
+        builder.setView(view);
+        final AlertDialog dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.show();
+
+        TextView tvTitulo = view.findViewById(R.id.tvMensaje);
+        TextView tvGanador = view.findViewById(R.id.tvGanador);
+        tvGanador.setText(String.format(getString(R.string.Ganaste),nombreJuno));
+        tvTitulo.setText(R.string.SetInicio2);
+        TextView tvPuntos = view.findViewById(R.id.tvPuntos);
+        tvPuntos.setText(String.format(getString(R.string.tusaciertos), puntosUid));
+
+        Button reinicio = view.findViewById(R.id.Reiniciar);
+        reinicio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), R.string.ComienzaJu, Toast.LENGTH_LONG).show();
+                puntosUid = 0;
+                actualizarAciertos();
+                dialog.dismiss();
+                countDownTimerDial.cancel();
+                isPause = false;
+                isParche = true;
+                onResume();
+            }
+        });
+
+        final Button ranking = view.findViewById(R.id.verRankin);
+        ranking.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), R.string.VamosRan, Toast.LENGTH_LONG).show();
+                Intent i = new Intent(PruebasActivity.this, RankingActivity.class);
+                startActivity(i);
+                dialog.dismiss();
+                finish();
+            }
+        });
+        countDownTimerDial = new CountDownTimer(18000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                millisecondsleft = millisUntilFinished;
+                ranking.setText("Ranking (" + String.format("%02d", millisUntilFinished / 1000) + ")");
+            }
+            @Override
+            public void onFinish() {
+                Intent i = new Intent(PruebasActivity.this, RankingActivity.class);
+                startActivity(i);
+                dialog.dismiss();
+                finish();
+            }
+        }.start();
+    }
+    /*-------- descarga foto y  optener usuario  -----------*/
+    private void getnombrePuntos(String idUsuario){ //regresa nombreJuno,puntosUid, foto perfil
+        db.collection("users")
+                .document(idUsuario)
+                .get()
+                .addOnSuccessListener(PruebasActivity.this, new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        userjUno=documentSnapshot.toObject(User.class);
+                        nombreJuno=documentSnapshot.get("name").toString();
+                        if(nombreJuno.length()>10){
+                            nombreJuno = nombreJuno.substring(0,10);}
+                    }
+                });
+    }
+    private void descargarFoto(String idUsuario) {
+        StorageReference filepath = mStorageRef.child(String.format(getString(R.string.SmStorageRef),idUsuario));
+        filepath.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    String downloadUrl = task.getResult().toString();
+                    Picasso.get()
+                            .load(downloadUrl)
+                            .resize(100, 100)
+                            .error(R.drawable.tocate)
+                            .into(fotoPerfil);
+                }
+            }
+        }).addOnFailureListener(PruebasActivity.this, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(PruebasActivity.this, getString(R.string.necesitasFoto), Toast.LENGTH_LONG).show();
+                SelectProfilePic();
+            }
+        });
+    }
+    /*-------- descarga foto y  optener usuario  -----------*/
+
+    /*--------  Code is for selecting image from galary or camera -----------*/
+    private void SelectProfilePic() {
+        final CharSequence[] options = { "Take Photo", "Choose from Gallery","Cancel" };
+        AlertDialog.Builder builder = new AlertDialog.Builder(PruebasActivity.this);
+        builder.setTitle(getString(R.string.AgregaFoto));
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (options[item].equals("Take Photo")){
+                    if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.M){
+                        if(checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ||
+                                checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
+                            String [] permission = {Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                            requestPermissions(permission,1000);
+                        }
+                        else {
+                            openCamera();
+                        }
+                    }
+                    else {
+                        openCamera();
+                    }
+                }
+                else if (options[item].equals("Choose from Gallery")){
+
+                    Intent intent = new   Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+
+                    startActivityForResult(intent, 2);
+
+                }else if (options[item].equals("Cancel")) {
+                    Toast.makeText(PruebasActivity.this,getString(R.string.necesitasFoto),Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
+                    finish();
+
+                }
+            }
+        });
+        builder.show();
+
+    }
+    private void openCamera() {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE,"New Picture");
+        values.put(MediaStore.Images.Media.DESCRIPTION,"From Camera");
+        image_uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values);
+
+        //Camera intent
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,image_uri);
+        startActivityForResult(takePictureIntent, 1);
+
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 1000) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openCamera();
+            } else {
+                //permission from pop up was denied.
+                Toast.makeText(PruebasActivity.this, "Permission Denied...", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        // Result code is RESULT_OK only if the user selects an Image
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            switch (requestCode) {
+                case 1:
+                    fotoPerfil.setImageURI(image_uri);
+                    break;
+                case 2:
+                    //data.getData returns the content URI for the selected Image
+                    image_uri = data.getData();
+                    fotoPerfil.setImageURI(image_uri);
+                    break;
+            }
+            SubirImangen();
+        }
+    }
+    private void SubirImangen() {
+        StorageReference filepath = mStorageRef.child(String.format(getString(R.string.SmStorageRef),uid));
+        filepath.putFile(image_uri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // Get a URL to the uploaded content
+                        Toast.makeText(PruebasActivity.this,getString(R.string.subioFoto), Toast.LENGTH_LONG).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                        Toast.makeText(PruebasActivity.this,getString(R.string.subioFoto), Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+    /*-------- Code is for selecting image from galary or camera -----------*/
+    @Override
+    public void onBackPressed() {
+        Intent i=new Intent(PruebasActivity.this, TransisionActivity.class);
+        startActivity(i);
+
+    }
+}

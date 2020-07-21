@@ -1,0 +1,96 @@
+<resources>
+    <string name="app_name">TÓCATE</string>
+    <string name="facebook_app_id">2695460533841129</string>
+    <string name="fb_login_protocol_scheme">fb2695460533841129</string>
+    <string name="title_activity_anuncios">AnunciosActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="interstitial_ad_sample">Interstitial Ad Sample</string>
+    <string name="start_level">Level 1</string>
+    <string name="next_level">Next Level</string>
+
+    <!-- ID Anuncios -->
+    <string name="interstitial_ad_unit_id">ca-app-pub-7818798086327817/8223560404</string>
+    <string name="Banner_ad_unit_id">ca-app-pub-7818798086327817/2096103857</string>
+
+    <!-- Inicio De Sesion -->
+    <string name="SetName">El Nombre es obligatorio</string>
+    <string name="SetEmail">El Correo es obligatorio</string>
+    <string name="SetPassword">La contraseña es obligatoria</string>
+    <string name="SetNombreR">Tu Nombre</string>
+    <string name="SetEmailR">Email</string>
+    <string name="SetContraseñaR">Contraseña</string>
+    <string name="SbtRegistroR">Registrarse</string>
+    <string name="SbtIniSes">usar correo y contraseña</string>
+    <string name="SbtRegsitroL">Crear Registro</string>
+    <string name="pInicioSesion">Inicia Sesión para continuar.</string>
+
+    <string name="Njuno">1 %1$s</string>
+    <string name="Njdos">2 %1$s</string>
+    <string name="Aciertos2">JUno=  %1$d JDos=  %2$d</string>
+    <string name="NombresTV">Jugador Uno: %1$s Jugador Dos: %2$s</string>
+
+    <!-- TransisionActivity-->
+    <string name="pun_totales">Puntos acumulados: %1$d</string>
+    <string name="AgregaFoto"> Actuliza tu foto</string>
+    <string name="tomaFoto"> !Toma una foto!</string>
+    <string name="necesitasFoto">"Necesitas una foto para jugar"</string>
+    <string name="SbtJugarSo">Tocate solo</string>
+    <string name="SbtJugarOnline">inivta a un amigo</string>
+    <string name="SbtRanking">Ver Ranking</string>
+    <string name="SbtBuscarPartida">Partida libre</string>
+    <string name="subioFoto">"Subio la foto"</string>
+    <string name="nosubioFoto">"No subio la foto, Intenta de nuevo"</string>
+    <string name="dynamicklinks">Prueba Tocate https://tocatef2.page.link/XktS</string>
+    <string name="linkinivto">Link  invitacion  a Tocate</string>
+    <string name="VamosRan">Vamos al Ranking</string>
+    <string name="TlistenFaild">"Listen Failed."</string>
+    <string name="noti_Titulo">Tienes una partida pendiente</string>
+    <string name="noti_Cuerpo">Apresurate, te esperan</string>
+    <string name="TrechazarJugada"> "Perdiste por rechazar la jugada."</string>
+    <string name="TpresioneSalir">"Presiona de nuevo para salir."</string>
+
+
+    <!-- FindGameActivity-->
+    <string name="StvCargando1">Creando jugada nueva</string>
+    <string name="StvCargando2">Esperando a otro jugador…</string>
+    <string name="StvCargando3">Comienza la partida</string>
+    <string name="StvCargando4">Cargando…</string>
+    <string name="StvCargando5">Buscando Partida Libre…</string>
+    <string name="ComienzaJu">¡Comienza el juego!</string>
+    <string name="eCrearJug"> "Error al crear Nueva juegada"</string>
+    <string name="ErrorLink">Error al construir el link, Vuelve a intnerar </string>
+    <string name="juegaconmigo">Juega conmigo en: </string>
+    <string name="Tpartidaeliminada">"La partida ya no existe, el  otro jugador se canso de esperar" </string>
+
+
+    <!-- GameActivity-->
+    <string name="Aciertos">Aciertos=  %1$d</string>
+    <string name="SetInicio1">¡Hola %1$s, %2$s!</string>
+    <string name="SetTocame1">TócaMe. </string>
+    <string name="SetTocate">TócaTe. </string>
+    <string name="SetCuentaReg">¡Listo!</string>
+    <string name="SetInicio2"> ¡Se acabó el tiempo! Tu recompensa:</string>
+    <string name="tusaciertos">Tus puntos de partida=  %1$d</string>
+    <string name="Toast_permiso">"Permission Denied..."</string>
+
+    <!-- RankingActivity-->
+    <string name="SetRanking">Los que más se Tocan</string>
+    <string name="SetPosicion">°</string>
+    <string name="SmStorageRef">images/%1$s.jpg</string>
+    <string name="SmStorageRef1">.jpg</string>
+    <string name="btInvPaartida"> juguemos</string>
+
+
+    <!-- MultPlayerActivity-->
+    <string name="SetTocateAti">TócaTe tu mismo</string>
+    <string name="Toca">Toca a %1$s</string>
+
+    <!-- dialogo_Gameover-->
+    <string name="reiniciar">reinicio </string>
+    <string name="Ganaste"> %1$s  te lo ganaste </string>
+    <string name="Perdiste"> %1$s Perdiste </string>
+    <string name="Regresar"> Regresar </string>
+    <string name="abandonopartida">!%1$s  abandono la partida¡</string>
+    <string name="Dosp">: %1$d</string>
+    <string name="errorOptenerJugada">!Ups¡ "Error al optener juegada"</string>
+</resources>

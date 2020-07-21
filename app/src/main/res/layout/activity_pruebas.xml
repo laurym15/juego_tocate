@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/relativeLayout"
+    tools:context=".ui.PruebasActivity">
+
+
+    <TextView
+        android:id="@+id/NomJuno"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/ayuma2yk"
+        android:textColor="@color/red"
+        android:textSize="30sp"
+        android:text="@string/SetInicio1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"/>
+
+    <RelativeLayout
+        android:id="@+id/Relative2Layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/TvAciertos"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_above="@+id/TvCuentaReg"
+        android:layout_below="@+id/NomJuno">
+
+
+        <TextView
+            android:id="@+id/tvTocate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/greatvibesregular"
+            android:text="@string/app_name"
+            android:textColor="@color/red_dark"
+            android:textSize="28sp"
+            android:padding="10dp"/>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imageJuno"
+            android:layout_width="104dp"
+            android:layout_height="104dp"
+            app:border_color="@color/red"
+            app:border_width="4dp"
+            app:srcCompat="@drawable/tocate" />
+
+        <ImageView
+            android:id="@+id/imageJdos"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            app:srcCompat="@drawable/tocame"
+            android:contentDescription="@string/app_name"
+         />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/TvAciertos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/onestarrynight"
+        android:textColor="@color/red"
+        android:textSize="30sp"
+        android:text="@string/Aciertos"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="10dp" />
+
+    <TextView
+        android:id="@+id/TvCuentaReg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/onestarrynight"
+        android:textColor="@color/red"
+        android:textSize="30sp"
+        android:text="@string/app_name"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        tools:ignore="RelativeOverlap" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutCargando"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/animation_view1"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="double-click.json"
+                app:lottie_loop="true" />
+
+            <TextView
+                android:id="@+id/textViewCargando"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:gravity="center" />
+
+            <ProgressBar
+                android:id="@+id/progressBarCargando"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

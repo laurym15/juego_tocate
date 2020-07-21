@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "614391100300",
+    "firebase_url": "https://tocate200219.firebaseio.com",
+    "project_id": "tocate200219",
+    "storage_bucket": "tocate200219.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:614391100300:android:8d5ef320b3f7da6a491ca9",
+        "android_client_info": {
+          "package_name": "com.lvmo.tocatef2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "614391100300-8bai9h1aoqf5f6rstc55fevr5c46lant.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lvmo.tocatef2",
+            "certificate_hash": "3b3db417ed75f78d775de73731924dfec55a5e1a"
+          }
+        },
+        {
+          "client_id": "614391100300-fl91n0ll3lp1dj9saq60od91sgv7r2ob.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDznaG_5NljZyBTdA2rWVGKpIuw7C-8oqU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "614391100300-fl91n0ll3lp1dj9saq60od91sgv7r2ob.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
